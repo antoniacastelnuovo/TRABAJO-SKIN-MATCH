@@ -1,15 +1,26 @@
+import sqlite3
 import pandas as pd
 import random
 import requests
+
 
 def detectar_piel(imagen):
     tipos = ["seca", "grasa", "mixta", "normal"]
     return random.choice(tipos)
 
+
 def recomendar_productos(tipo_piel):
-    df = pd.read_csv("productos.csv")
-    recomendados = df[df["tipo_piel"] == tipo_piel]
-    return recomendados.to_dict(orient="records")
+    conn = sqlite3.connect("productos.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM productos WHERE tipo_piel = ?", (tipo_piel,))
+    columnas = [desc[0] for desc in cursor.description]
+    productos = [dict(zip(columnas, fila)) for fila in cursor.fetchall()]
+    conn.close()
+    return productos
+
+def buscar_producto_online(nombre):
+    return {"tienda": "MakeUp Store", "link": f"https://tienda.com/{nombre.replace(' ', '_')}"}
+
 
 def obtener_clima(ciudad):
     api_key = "761dd47e8f5f08f722c5b4ea7b97eb09"
