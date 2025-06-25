@@ -39,8 +39,8 @@ def cargar_datos_desde_excel(archivo_excel):
             row['CATEGORIA'],
             row['TONO'],
             float(str(row['PRECIO']).replace("USD ", "").replace(",", ".")),
-            row['VENCIMIENTO'],  # corregir si el nombre correcto es 'VENCIMIENTO'
-            row.get('TIPO_PIEL', 'No definido')  # si falta, se completa
+            row['VENCIMIENTO'],
+            row.get('TIPO_PIEL', 'No definido')
         ))
 
     conn.commit()

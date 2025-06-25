@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from controllers import detectar_piel, recomendar_productos, buscar_producto_online
+from controllers import detectar_piel, recomendar_productos, buscar_producto_online, obtener_clima, recomendaciones_por_clima
 from database import crear_tabla
 import sqlite3
 
@@ -59,11 +59,25 @@ def eliminar_producto(id):
     conn.close()
     return jsonify({"msg": f"Producto {id} eliminado"})
 
-@app.route("/api/buscar_online", methods=["GET"])
-def buscar_online():
-    nombre = request.args.get("nombre")
-    resultado = buscar_producto_online(nombre)
-    return jsonify(resultado)
+
+def buscar_producto_online(nombre): #simulacion de una api de terceros (devuelve un link del local donde encontrar el producto)
+    return {"tienda": "MakeUp Store", "link": f"https://tienda.com/{nombre.replace(' ', '_')}"}
+
+@app.route("/api/clima", methods=["GET"])
+def api_clima():
+    ciudad = request.args.get("ciudad")
+    if not ciudad:
+        return jsonify({"error": "Falta parámetro 'ciudad'"}), 400
+    clima = obtener_clima(ciudad)
+    return jsonify(clima)
+
+@app.route("/api/recomendaciones_clima", methods=["GET"])
+def api_recomendar_por_clima():
+    ciudad = request.args.get("ciudad")
+    if not ciudad:
+        return jsonify({"error": "Falta parámetro 'ciudad'"}), 400
+    sugerencias = recomendaciones_por_clima(ciudad)
+    return jsonify({"recomendaciones": sugerencias})
 
 if __name__ == "__main__":
     app.run(debug=True)
